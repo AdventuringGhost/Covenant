@@ -1,5 +1,3 @@
-# Configuration: load all env vars (DB, OPA, Claude API, JWT, Azure) via pydantic-settings
-
 from pydantic_settings import BaseSettings
 
 

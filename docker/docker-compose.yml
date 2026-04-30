@@ -1,19 +1,23 @@
-# Local dev stack: api, postgres (pgvector), and opa services on a shared internal network
-
 services:
   api:
     build:
       context: ..
       dockerfile: docker/Dockerfile
     ports:
-      - "8000:8000"
+      - "8080:8080"
     env_file:
       - ../.env
+    environment:
+      # Override localhost URLs from .env with Docker-internal service hostnames
+      DATABASE_URL: postgresql+asyncpg://covenant:changeme@postgres:5432/covenant
+      OPA_URL: http://opa:8181
     depends_on:
       postgres:
         condition: service_healthy
       opa:
         condition: service_started
+    networks:
+      - covenant
 
   postgres:
     image: pgvector/pgvector:pg16
@@ -30,14 +34,28 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - covenant
 
   opa:
     image: openpolicyagent/opa:latest
-    command: ["run", "--server", "--addr", "0.0.0.0:8181", "/policies"]
+    command:
+      - run
+      - --server
+      - --config-file=/config/opa.yaml
+      - --addr=0.0.0.0:8181
+      - /policies
     ports:
       - "8181:8181"
     volumes:
       - ../opa/policies:/policies:ro
+      - ../opa/config.yaml:/config/opa.yaml:ro
+    networks:
+      - covenant
+
+networks:
+  covenant:
+    driver: bridge
 
 volumes:
   postgres_data:

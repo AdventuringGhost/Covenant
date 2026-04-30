@@ -23,6 +23,16 @@ anthropic==0.40.0
 # Config
 pydantic-settings==2.5.2
 python-multipart==0.0.9
+python-dotenv==1.0.1
+
+# PostgreSQL sync driver (used by Alembic and psycopg2-based tooling)
+psycopg2-binary==2.9.9
+
+# Logging
+structlog==24.4.0
+
+# Embeddings
+sentence-transformers==3.1.1
 
 # Testing
 pytest==8.3.3
