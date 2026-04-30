@@ -1,0 +1,21 @@
+# OPA server configuration: bundle source, decision logging, and REST API settings
+
+services:
+  covenant-bundle:
+    url: http://localhost:8080  # replace with bundle server URL in production
+
+bundles:
+  covenant:
+    service: covenant-bundle
+    resource: /bundles/covenant.tar.gz
+    polling:
+      min_delay_seconds: 10
+      max_delay_seconds: 30
+
+decision_logs:
+  console: true  # emit structured decision logs to stdout; ship to SIEM in production
+
+plugins:
+  envoy_ext_authz_grpc:
+    addr: :9191
+    enable-reflection: true
